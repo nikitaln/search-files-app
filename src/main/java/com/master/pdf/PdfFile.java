@@ -1,3 +1,5 @@
+package com.master.pdf;
+
 public class PdfFile {
 
     private String name;
@@ -49,7 +51,7 @@ public class PdfFile {
 
     @Override
     public String toString() {
-        return "PdfFile{" +
+        return "com.master.pdf.PdfFile{" +
                 "name='" + name + '\'' +
                 ", path='" + path + '\'' +
                 ", author='" + author + '\'' +

@@ -1,22 +1,25 @@
+package com.master.pdf;
+
+import com.master.db.DbConnection;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileOwnerAttributeView;
 import java.nio.file.attribute.FileTime;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchFile {
+public class PdfFileService {
 
     private List<String> listPDF = new ArrayList<>();
     private List<PdfFile> pdfFiles = new ArrayList<>();
-
 
 
     public List<String> searchFolderWithPDF(String path, String date) {
@@ -52,6 +55,7 @@ public class SearchFile {
     }
 
 
+
     public List<PdfFile> addPdfFilesToList(List<String> listPDF) {
 
         for (String path : listPDF) {
@@ -59,8 +63,14 @@ public class SearchFile {
             pdfFiles.add(pdfFile);
         }
 
+        try {
+            createFileInfo(pdfFiles);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return pdfFiles;
     }
+
 
 
     public PdfFile createFileWithInfo(String path) {
@@ -68,7 +78,11 @@ public class SearchFile {
         PdfFile pdfFile = new PdfFile();
 
         pdfFile.setName(getFileName(file));
-        pdfFile.setPath(file.getPath());
+
+        //экранирование
+        String pathEscape = file.getPath().replace("\\", "\\\\");
+
+        pdfFile.setPath(pathEscape);
         pdfFile.setAuthor(getFileAuthor(file));
         pdfFile.setPageCount(getFileCountPages(file));
         pdfFile.setTimeCreation(getFileCreationTime(file));
@@ -78,9 +92,11 @@ public class SearchFile {
     }
 
 
+
     public String getFileName(File file) {
         return file.getName();
     }
+
 
 
     public String getFileCreationTime(File file) {
@@ -99,17 +115,20 @@ public class SearchFile {
     }
 
 
+
     public String getFileAuthor(File file) {
 
         try {
             FileOwnerAttributeView fileOwnerAttributeView = java.nio.file.Files.getFileAttributeView(file.toPath(), FileOwnerAttributeView.class);
-            String author = fileOwnerAttributeView.getOwner().getName().toString();
+            String authorAndDomen = fileOwnerAttributeView.getOwner().getName().toString();
+            String author = authorAndDomen.substring(8);
             return author;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 
 
     public int getFileCountPages(File file) {
@@ -125,27 +144,50 @@ public class SearchFile {
     }
 
 
-    public void printAllPdfFiles() {
 
-        String date = "13.06.2024";
-        int count = 0;
-        long pagesCount = 0;
+    public void createFileInfo(List<PdfFile> pdfFiles) throws SQLException {
 
-        for (PdfFile file : pdfFiles) {
-            if (file.getTimeCreation().equals(date)) {
-                System.out.println(file.toString());
-                count = count + 1;
-                pagesCount = pagesCount + file.getPageCount();
-            }
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder sqlStringBuilder = new StringBuilder();
+
+
+        try {
+            PrintWriter printWriter = new PrintWriter("F:\\pdf-statistics.txt");
+            printWriter.write(stringBuilder.toString());
+            printWriter.flush();
+            printWriter.close();
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    public String getAllFiles() {
+
+        //INSERT INTO pdf_info(date, filename, path, pagesCount, username)
+        StringBuilder sqlStringBuilder = new StringBuilder();
+
+        for (PdfFile pdf : pdfFiles) {
+            sqlStringBuilder.append("('" +
+                    pdf.getTimeCreation() + "', '" +
+                    pdf.getName() + "', '" +
+                    pdf.getPath() + "', '" +
+                    pdf.getPageCount() + "', '" +
+                    pdf.getAuthor() + "'), ");
         }
 
-        System.out.println("Кол-во буклетов = " + count);
-        System.out.println("Кол-во страниц = " + pagesCount);
+        String sql = sqlStringBuilder.toString();
+        int lastIndex = sql.length();
+        String sql2 = sql.substring(0, lastIndex - 2);
+        String sql3 = sql2 + ";";
+
+        return sql3;
     }
 
-    public void startProcess(JProgressBar progressBar) {
-        progressBar.setValue(0);
-        progressBar.setIndeterminate(true);
-    }
+
+
 
 }

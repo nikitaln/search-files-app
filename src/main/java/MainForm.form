@@ -94,11 +94,6 @@
             </constraints>
             <properties/>
           </component>
-          <vspacer id="abcf8">
-            <constraints>
-              <grid row="11" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </vspacer>
           <component id="d1c53" class="javax.swing.JButton" binding="searchButton">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -114,6 +109,23 @@
             </constraints>
             <properties>
               <value value="0"/>
+            </properties>
+          </component>
+          <component id="39825" class="javax.swing.JButton" binding="saveDbButton">
+            <constraints>
+              <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Сохранить в БД"/>
+            </properties>
+          </component>
+          <component id="1c94d" class="javax.swing.JLabel" binding="resultSaveDBLabel">
+            <constraints>
+              <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Сохранено"/>
+              <visible value="false"/>
             </properties>
           </component>
         </children>

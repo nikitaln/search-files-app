@@ -1,8 +1,13 @@
+import com.master.db.DbConnection;
+import com.master.pdf.PdfFile;
+import com.master.pdf.PdfFileService;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+
 
 public class MainForm {
 
@@ -20,9 +25,16 @@ public class MainForm {
     private JLabel dateLabel;
     private JLabel statisticsLabel;
     private JProgressBar progressBar;
+    private JButton saveDbButton;
+    private JLabel resultSaveDBLabel;
+
+    private PdfFileService searchPdfFile;
+    private DbConnection dbConnection;
 
 
     public MainForm() {
+
+
 
         searchButton.addActionListener(new ActionListener() {
             @Override
@@ -31,10 +43,11 @@ public class MainForm {
                 SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
                     @Override
                     protected Void doInBackground() {
-                        System.out.println("До прогресс бара");
+
                         progressBar.setIndeterminate(true);
-                        System.out.println("После прогресс бара");
+
                         scanningPdf();
+
                         return null;
                     }
                     @Override
@@ -45,21 +58,46 @@ public class MainForm {
                 worker.execute();
             }
         });
+
+
+
+        saveDbButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                /**
+                 * TODO: insert to db
+                 */
+
+                System.out.println("connect to DB");
+                String sql = searchPdfFile.getAllFiles();
+
+                System.out.println(sql);
+
+                dbConnection = new DbConnection();
+                dbConnection.getConnection();
+                try {
+                    dbConnection.executeMultiInsert(sql);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                resultSaveDBLabel.setVisible(true);
+            }
+        });
     }
 
 
     public void scanningPdf() {
-        System.out.println("Зашли в метод Инфо");
+
         String path = mainPathToDirectoryField.getText();
         String date = dateField.getText();
 
         System.out.println("path " + path);
         System.out.println("date " + date);
 
-
-        SearchFile searchFile = new SearchFile();
-        List<String> paths = searchFile.searchFolderWithPDF(path, date);
-        List<PdfFile> PDFs = searchFile.addPdfFilesToList(paths);
+        searchPdfFile = new PdfFileService();
+        List<String> paths = searchPdfFile.searchFolderWithPDF(path, date);
+        List<PdfFile> PDFs = searchPdfFile.addPdfFilesToList(paths);
 
         int count = 0;
         long pagesCount = 0;
