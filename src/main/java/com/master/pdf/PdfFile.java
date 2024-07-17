@@ -1,11 +1,13 @@
 package com.master.pdf;
 
+import java.time.LocalDate;
+
 public class PdfFile {
 
     private String name;
     private String path;
     private String author;
-    private String timeCreation;
+    private LocalDate timeCreation;
     private long pageCount;
 
 
@@ -33,11 +35,11 @@ public class PdfFile {
         this.author = author;
     }
 
-    public String getTimeCreation() {
+    public LocalDate getTimeCreation() {
         return timeCreation;
     }
 
-    public void setTimeCreation(String timeCreation) {
+    public void setTimeCreation(LocalDate timeCreation) {
         this.timeCreation = timeCreation;
     }
 

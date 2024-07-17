@@ -12,8 +12,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileOwnerAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PdfFileService {
@@ -31,13 +36,12 @@ public class PdfFileService {
         }
         if (!file.isDirectory()) {
             System.out.println("Это не каталог с папками");
-        }
-        else {
+        } else {
 
             //массив для хранения названий каталогов в данной папке
             String[] dirList = file.list();
 
-            for (int i=0; i < dirList.length; i++) {
+            for (int i = 0; i < dirList.length; i++) {
                 File f1 = new File(path + File.separator + dirList[i]);
                 if (f1.isFile()) {
 
@@ -53,7 +57,6 @@ public class PdfFileService {
         }
         return listPDF;
     }
-
 
 
     public List<PdfFile> addPdfFilesToList(List<String> listPDF) {
@@ -72,31 +75,35 @@ public class PdfFileService {
     }
 
 
-
     public PdfFile createFileWithInfo(String path) {
+
         File file = new File(path);
         PdfFile pdfFile = new PdfFile();
 
         pdfFile.setName(getFileName(file));
 
-        //экранирование
-        String pathEscape = file.getPath().replace("\\", "\\\\");
-
+        String pathEscape = file.getPath().replace("\\", "\\\\");   //экранирование пути к папкам, для правильной записи в БД
         pdfFile.setPath(pathEscape);
+
         pdfFile.setAuthor(getFileAuthor(file));
         pdfFile.setPageCount(getFileCountPages(file));
-        pdfFile.setTimeCreation(getFileCreationTime(file));
+
+
+        System.out.println("Старт");
+        String dateInString = getFileCreationTime(file);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate localDate = LocalDate.parse(dateInString, formatter); //переводим дату из String в объект LocalDate
+        System.out.println("Конец");
+        pdfFile.setTimeCreation(localDate);
 
         return pdfFile;
 
     }
 
 
-
     public String getFileName(File file) {
         return file.getName();
     }
-
 
 
     public String getFileCreationTime(File file) {
@@ -115,7 +122,6 @@ public class PdfFileService {
     }
 
 
-
     public String getFileAuthor(File file) {
 
         try {
@@ -130,7 +136,6 @@ public class PdfFileService {
     }
 
 
-
     public int getFileCountPages(File file) {
 
         try {
@@ -142,7 +147,6 @@ public class PdfFileService {
             throw new RuntimeException(e);
         }
     }
-
 
 
     public void createFileInfo(List<PdfFile> pdfFiles) throws SQLException {
@@ -164,7 +168,6 @@ public class PdfFileService {
     }
 
 
-
     public String getAllFiles() {
 
         //INSERT INTO pdf_info(date, filename, path, pagesCount, username)
@@ -183,11 +186,7 @@ public class PdfFileService {
         int lastIndex = sql.length();
         String sql2 = sql.substring(0, lastIndex - 2);
         String sql3 = sql2 + ";";
-
+        System.out.println(sql3);
         return sql3;
     }
-
-
-
-
 }

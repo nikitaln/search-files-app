@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -35,7 +37,6 @@ public class MainForm {
     public MainForm() {
 
 
-
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -58,7 +59,6 @@ public class MainForm {
                 worker.execute();
             }
         });
-
 
 
         saveDbButton.addActionListener(new ActionListener() {
@@ -102,9 +102,11 @@ public class MainForm {
         int count = 0;
         long pagesCount = 0;
 
-
+        System.out.println("Перечисление всех файлов");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate localDate = LocalDate.parse(date, formatter); //переводим дату из String в объект LocalDate
         for (PdfFile file : PDFs) {
-            if (file.getTimeCreation().equals(date)) {
+            if (file.getTimeCreation().equals(localDate)) {
                 System.out.println(file.toString());
                 count = count + 1;
                 pagesCount = pagesCount + file.getPageCount();
@@ -115,6 +117,17 @@ public class MainForm {
         filesCountField.setText(String.valueOf(count));
         pagesCountField.setText(String.valueOf(pagesCount));
 
+
+        dbConnection = new DbConnection();
+        dbConnection.getConnection();
+
+        try {
+            System.out.println("after insert");
+            String sql = searchPdfFile.getAllFiles();
+            dbConnection.executeMultiInsert(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

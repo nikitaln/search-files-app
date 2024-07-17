@@ -13,11 +13,10 @@ public class DbConnection {
     private static String dbPass = "1234";
 
 
-
+    //создание Connection для MySQL и создание таблицы pdf_info
+    //+ необходимо подключить Maven-зависимость mysql-connector-java
     public static Connection getConnection() {
-        System.out.println("Connecting DB");
 
-            System.out.println("Connecting DB2");
             try {
 
                 //создали связь с БД
@@ -25,12 +24,10 @@ public class DbConnection {
                         "jdbc:mysql://localhost:3306/" + dbName +
                                 "?user=" + dbUser + "&password=" + dbPass);
 
-                System.out.println("Connecting DB3");
-
                 connection.createStatement().execute("DROP TABLE IF EXISTS pdf_info");
                 connection.createStatement().execute("CREATE TABLE pdf_info(" +
                         "id INT NOT NULL AUTO_INCREMENT, " +
-                        "date VARCHAR(250) NOT NULL, " +
+                        "date DATE NOT NULL, " +
                         "filename VARCHAR(250) NOT NULL, " +
                         "path TEXT NOT NULL, " +
                         "pagesCount INT NOT NULL, " +
@@ -45,13 +42,13 @@ public class DbConnection {
 
 
 
-    //выполнить множественный INSERT
+    //выполнить множественный INSERT к таблице pdf_info
     public boolean executeMultiInsert(String sqlStringBuilder) throws SQLException {
 
         System.out.println("insert method");
         String sql = "INSERT INTO pdf_info (date, filename, path, pagesCount, username) " +
                 "VALUES " + sqlStringBuilder;
-        DbConnection.getConnection().prepareStatement(sql).execute();
+        DbConnection.getConnection().createStatement().execute(sql);
 
         return true;
 
