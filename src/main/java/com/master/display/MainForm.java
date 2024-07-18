@@ -1,3 +1,5 @@
+package com.master.display;
+
 import com.master.db.DbConnection;
 import com.master.pdf.PdfFile;
 import com.master.pdf.PdfFileService;
@@ -75,6 +77,7 @@ public class MainForm {
 
                 dbConnection = new DbConnection();
                 dbConnection.getConnection();
+
                 try {
                     dbConnection.executeMultiInsert(sql);
                 } catch (SQLException ex) {
@@ -92,42 +95,77 @@ public class MainForm {
         String path = mainPathToDirectoryField.getText();
         String date = dateField.getText();
 
+        /**
+         * 1. Проверка с помощью регулярных выражений (период или 1 день)
+         * Регулярное выражение для проверки 01.01.2024
+         *
+         */
+
+        String regexOneDay = "[0-9]";
+        String regexFewDays = "[]";
+
         System.out.println("path " + path);
         System.out.println("date " + date);
 
-        searchPdfFile = new PdfFileService();
-        List<String> paths = searchPdfFile.searchFolderWithPDF(path, date);
-        List<PdfFile> PDFs = searchPdfFile.addPdfFilesToList(paths);
+        String[] dates = date.split("-");
 
-        int count = 0;
-        long pagesCount = 0;
-
-        System.out.println("Перечисление всех файлов");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate localDate = LocalDate.parse(date, formatter); //переводим дату из String в объект LocalDate
-        for (PdfFile file : PDFs) {
-            if (file.getTimeCreation().equals(localDate)) {
-                System.out.println(file.toString());
-                count = count + 1;
-                pagesCount = pagesCount + file.getPageCount();
-
-            }
+        for (int i=0; i < dates.length; i++) {
+            System.out.println(dates[i]);
         }
 
-        filesCountField.setText(String.valueOf(count));
-        pagesCountField.setText(String.valueOf(pagesCount));
 
 
-        dbConnection = new DbConnection();
-        dbConnection.getConnection();
 
-        try {
-            System.out.println("after insert");
-            String sql = searchPdfFile.getAllFiles();
-            dbConnection.executeMultiInsert(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        searchPdfFile = new PdfFileService();
+//        List<String> paths = searchPdfFile.searchFolderWithPDF(path, date);
+//        List<PdfFile> PDFs = searchPdfFile.addPdfFilesToList(paths);
+//
+//        int count = 0;
+//        long pagesCount = 0;
+//
+//        System.out.println("Перечисление всех файлов");
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+//        LocalDate localDate = LocalDate.parse(date, formatter); //переводим дату из String в объект LocalDate
+//        for (PdfFile file : PDFs) {
+//            if (file.getTimeCreation().equals(localDate)) {
+//                System.out.println(file.toString());
+//                count = count + 1;
+//                pagesCount = pagesCount + file.getPageCount();
+//
+//            }
+//        }
+//
+//        filesCountField.setText(String.valueOf(count));
+//        pagesCountField.setText(String.valueOf(pagesCount));
+//
+//
+//        dbConnection = new DbConnection();
+//        dbConnection.getConnection();
+//
+//        try {
+//            System.out.println("after insert");
+//            String sql = searchPdfFile.getAllFiles();
+//            dbConnection.executeMultiInsert(sql);
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
 
