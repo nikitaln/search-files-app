@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -104,7 +105,10 @@ public class MainForm {
             if (dateFieldService.isOneDay(date)) {
                 System.out.println("один день");
                 //
-                searchPdf(path, date);
+                LocalDate localDateOneDay = dateFieldService.getLocalDateFromString(date);
+                List<LocalDate> dates = new ArrayList<>();
+                dates.add(localDateOneDay);
+                searchPdf(path, dates);
 
             } else {
                 System.out.println("несколько дней");
@@ -123,6 +127,7 @@ public class MainForm {
                     for (LocalDate date1 : dates) {
                         System.out.println(date1.toString());
                     }
+                    searchPdf(path, dates);
                 }
             }
         } else {
@@ -132,24 +137,22 @@ public class MainForm {
 
 
 
-    public void searchPdf(String path, String date) {
+    public void searchPdf(String path, List<LocalDate> dates) {
 
         searchPdfFile = new PdfFileService();
-        List<String> paths = searchPdfFile.searchFolderWithPDF(path, date);
+        List<String> paths = searchPdfFile.searchFolderWithPDF(path, dates);
         List<PdfFile> PDFs = searchPdfFile.addPdfFilesToList(paths);
 
         int count = 0;
         long pagesCount = 0;
 
         System.out.println("Перечисление всех файлов");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate localDate = LocalDate.parse(date, formatter); //переводим дату из String в объект LocalDate
+
         for (PdfFile file : PDFs) {
-            if (file.getTimeCreation().equals(localDate)) {
+            if (dates.contains(file.getTimeCreation())) {
                 System.out.println(file.toString());
                 count = count + 1;
                 pagesCount = pagesCount + file.getPageCount();
-
             }
         }
 

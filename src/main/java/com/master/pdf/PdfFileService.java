@@ -23,7 +23,7 @@ public class PdfFileService {
     private List<PdfFile> pdfFiles = new ArrayList<>();
 
 
-    public List<String> searchFolderWithPDF(String path, String date) {
+    public List<String> searchFolderWithPDF(String path, List<LocalDate> dates) {
 
         //проверяем существует ли данный путь и указывает ли он на каталог
         File file = new File(path);
@@ -41,18 +41,19 @@ public class PdfFileService {
                 File f1 = new File(path + File.separator + dirList[i]);
                 if (f1.isFile()) {
 
-                    if (f1.getName().endsWith("pdf") && getFileCreationTime(f1).equals(date)) {
+                    if (f1.getName().endsWith("pdf") && dates.contains(getFileCreationTime(f1))) {
                         String link = path + File.separator + dirList[i];
                         listPDF.add(link);
                     }
 
                 } else {
-                    searchFolderWithPDF(path + File.separator + dirList[i], date);
+                    searchFolderWithPDF(path + File.separator + dirList[i], dates);
                 }
             }
         }
         return listPDF;
     }
+
 
 
     public List<PdfFile> addPdfFilesToList(List<String> listPDF) {
@@ -71,6 +72,7 @@ public class PdfFileService {
     }
 
 
+
     public PdfFile createFileWithInfo(String path) {
 
         File file = new File(path);
@@ -84,12 +86,7 @@ public class PdfFileService {
         pdfFile.setAuthor(getFileAuthor(file));
         pdfFile.setPageCount(getFileCountPages(file));
 
-
-        System.out.println("Старт");
-        String dateInString = getFileCreationTime(file);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate localDate = LocalDate.parse(dateInString, formatter); //переводим дату из String в объект LocalDate
-        System.out.println("Конец");
+        LocalDate localDate = getFileCreationTime(file);
         pdfFile.setTimeCreation(localDate);
 
         return pdfFile;
@@ -97,26 +94,29 @@ public class PdfFileService {
     }
 
 
+
     public String getFileName(File file) {
         return file.getName();
     }
 
 
-    public String getFileCreationTime(File file) {
+
+    public LocalDate getFileCreationTime(File file) {
 
         try {
             BasicFileAttributes attributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
             FileTime timeFile = attributes.creationTime();
-//            SimpleDateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm");
             SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
             String dateCreated = df.format(timeFile.toMillis());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-            return dateCreated;
+            return LocalDate.parse(dateCreated, formatter);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 
 
     public String getFileAuthor(File file) {
@@ -133,6 +133,7 @@ public class PdfFileService {
     }
 
 
+
     public int getFileCountPages(File file) {
 
         try {
@@ -144,6 +145,7 @@ public class PdfFileService {
             throw new RuntimeException(e);
         }
     }
+
 
 
     public void createFileInfo(List<PdfFile> pdfFiles) throws SQLException {
@@ -163,6 +165,7 @@ public class PdfFileService {
             throw new RuntimeException(e);
         }
     }
+
 
 
     public String getAllFiles() {
