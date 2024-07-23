@@ -1,6 +1,5 @@
 package com.master.pdf;
 
-import com.master.db.DbConnection;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
@@ -12,13 +11,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileOwnerAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class PdfFileService {
@@ -114,6 +110,7 @@ public class PdfFileService {
 //            SimpleDateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm");
             SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
             String dateCreated = df.format(timeFile.toMillis());
+
             return dateCreated;
 
         } catch (IOException e) {
