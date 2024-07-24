@@ -21,6 +21,7 @@ public class PdfFileService {
 
     private List<String> listPDF = new ArrayList<>();
     private List<PdfFile> pdfFiles = new ArrayList<>();
+    private List<File> fileList = new ArrayList<>();
 
 
     public List<String> searchFolderWithPDF(String path, List<LocalDate> dates) {
@@ -188,5 +189,53 @@ public class PdfFileService {
         String sql3 = sql2 + ";";
         System.out.println(sql3);
         return sql3;
+    }
+
+
+
+    public void searchTheEarliestDate(String path) {
+
+        //проверяем существует ли данный путь и указывает ли он на каталог
+        File file = new File(path);
+        if (!file.exists()) {
+            System.out.println("Такого пути нет");
+        }
+        if (!file.isDirectory()) {
+            System.out.println("Это не каталог с папками");
+        } else {
+
+            //массив для хранения названий каталогов в данной папке
+            String[] dirList = file.list();
+
+            for (int i = 0; i < dirList.length; i++) {
+
+                File f1 = new File(path + File.separator + dirList[i]);
+
+
+                if (f1.isFile()) {
+
+                    if (f1.getName().endsWith("pdf")) {
+
+                        if (fileList.isEmpty()) {
+                            fileList.add(f1);
+                            System.out.println("добавили в массив - " + f1.getAbsolutePath());
+                        } else {
+
+                            LocalDate time1 = getFileCreationTime(fileList.get(0));
+                            LocalDate time2 = getFileCreationTime(f1);
+
+                            if (time1.isAfter(time2)) {
+                                System.out.println("добавили в массив файл с временем - " + time2.toString());
+                                System.out.println("юзер - " + getFileAuthor(f1));
+                                fileList.add(0, f1);
+                            }
+                        }
+                    }
+
+                } else {
+                    searchTheEarliestDate(path + File.separator + dirList[i]);
+                }
+            }
+        }
     }
 }
