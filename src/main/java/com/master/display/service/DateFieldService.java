@@ -21,7 +21,6 @@ public class DateFieldService {
     //проверка последовательности введенных дат
     public boolean isCorrectDateFormat(String date) {
         if (date.matches(regexOneDay) || date.matches(regexFewDays)) {
-            System.out.println("верно");
             return true;
         }
         else {
@@ -43,7 +42,6 @@ public class DateFieldService {
 
     //отделить даты
     public String[] splitDate(String dates) {
-
         return dates.split("-");
     }
 
@@ -59,13 +57,11 @@ public class DateFieldService {
 
     //возвращает все даты между 2-мя датами
     public List<LocalDate> getAllDaysBetweenTwoDates(LocalDate startDate, LocalDate endDate) {
-
         List<LocalDate> dates = new ArrayList<>();
         while (!startDate.isAfter(endDate)) {
             dates.add(startDate);
             startDate = startDate.plusDays(1);
         }
-
         return dates;
     }
 

@@ -40,7 +40,7 @@ public class MainForm {
 
     public MainForm() {
 
-
+        //кнопка поиска файлов
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,6 +65,7 @@ public class MainForm {
         });
 
 
+        //кнопка сохранения в бд
         saveDbButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -158,18 +159,6 @@ public class MainForm {
 
         filesCountField.setText(String.valueOf(count));
         pagesCountField.setText(String.valueOf(pagesCount));
-
-
-        dbConnection = new DbConnection();
-        dbConnection.getConnection();
-
-        try {
-            System.out.println("after insert");
-            String sql = searchPdfFile.getAllFiles();
-            dbConnection.executeMultiInsert(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
