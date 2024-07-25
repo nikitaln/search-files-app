@@ -8,6 +8,7 @@ import com.master.pdf.PdfFileService;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +36,7 @@ public class MainForm {
     private JLabel resultSaveDBLabel;
 
     private PdfFileService searchPdfFile;
-    private DbConnection dbConnection;
+    private DbConnection dbConnection = new DbConnection();
 
 
     public MainForm() {
@@ -77,8 +78,6 @@ public class MainForm {
                 String sql = searchPdfFile.getAllFiles();
 
                 System.out.println(sql);
-
-                dbConnection = new DbConnection();
                 dbConnection.getConnection();
 
                 try {
